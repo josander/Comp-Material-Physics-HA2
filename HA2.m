@@ -124,20 +124,32 @@ for i = 1:Gsize(1)
 end
 
 %%
-tic
-V_dG = getV_dG(V_r, dG, r);
-toc
-
-
-Ham = 1;
-
-
+kMat = [0 0 0];
+step = 0.01;
+n = 1;
 % The symmetry points in k-space
 Gamma = 2*pi/a*[0 0 0];
 X = 2*pi/a*[1 0 0];
 W = 2*pi/a*[1 0.5 1];
 L = 2*pi/a*[0.5 0.5 0.5];
 K = 2*pi/a*[0.75 0.75 0];
+
+sPoints =[Gamma ;X ; W ;L;Gamma; K ;Gamma]; 
+
+for i = 2:7
+   
+    wVector = (sPoints(i,:) - kMat(n,:))/norm(sPoints(i,:) - kMat(n,:));
+    
+    
+    while norm(sPoints(i,:) - kMat(n,:)) > 0.01  
+    
+        kMat = [kMat; kMat(n,:) + wVector*step];
+        
+        n = n + 1;
+       
+   end
+end
+
 
 %% Task 3: The valence electron charge density
 
