@@ -162,6 +162,9 @@ a = 5.43;
 hbar = 1;                   % [au]
 me = 1;                     % [au]
 
+% 
+plotNumBands = 3;
+
 % Basis vectors
 d(1,:) = a/8*[1 1 1];         
 d(2,:) = -a/8*[1 1 1]; 
@@ -235,18 +238,22 @@ for kNum = 1:length(kMat)
 
     eigs = diag(eigs);
     
-    
-    
-    % Find index of the minimal eigenvalue
-    index = find(eigs == min(eigs));
+    for nBands = 1:plotNumBands
+        
+        % Find index of the minimal eigenvalue
+        index = find(eigs == min(eigs));
 
-    % Get the minimal eigenvalue in Hartree energy
-    minEig(kNum) = eigs(index);
+        % Get the minimal eigenvalue in Hartree energy
+        minEig(kNum, nBands) = eigs(index);
+        
+        % Set the lowest value to something big
+        eigs(index) = 1000;
+    
+    end
     
     kVec(kNum) = 0.01*kNum;
     
 end
-
 
 plot(kVec, minEig);
 
