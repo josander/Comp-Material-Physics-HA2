@@ -85,6 +85,8 @@ set(X, 'Units', 'Normalized', 'Position', [0.5, -0.05, 0]);
 print(gcf,'-depsc2','task1.eps')
 
 %% Task 2: Get band structure
+% Find convergence
+
 clc
 
 % Lattice parameter [Å]
@@ -143,7 +145,26 @@ eigs3 = diag(eigs3);
 
 
 
-%%
+%% Task 2: Plot band structure
+
+clc
+
+% Lattice parameter [Å]
+a = 5.43;   
+
+% Constants
+hbar = 1;                   % [au]
+me = 1;                     % [au]
+
+% Basis vectors
+d(1,:) = a/8*[1 1 1];         
+d(2,:) = -a/8*[1 1 1]; 
+
+% Maxvalue in the G-vector
+maxValue = 2;
+
+% Define E cut off
+Ecut = 1000;              % [au]
 
 % The symmetry points in k-space
 Gamma = 2*pi/a*[0 0 0];
@@ -154,7 +175,68 @@ K = 2*pi/a*[0.75 0.75 0];
 
 
 
+% Allocate memory
+minEig = zeros(length(kMat),1);
 
+for kNum = 1:length(kMat)
+    
+    % Define G-vectors for which the structure factor > zero
+    [G] = constructGbig(a, maxValue, kMat(kNum,:), Ecut);
+
+    % Get dG ang form factor for dG
+    [dG, v_dG] = getDG(G);
+
+    % Get size of dG
+    dGsize = size(dG);
+
+    % Get the structure factor in reciprocal space
+    for i = 1:dGsize(1)
+        for j = 1:dGsize(1)
+            S_dG(i,j) = 2*cos([dG(i,j,1) dG(i,j,2) dG(i,j,3)]*d(1,:)');
+        end
+    end
+
+    % Get potential in reciprocal space for G_m - G_m'
+    V_dG = v_dG * S_dG;
+
+    % Get Hamiltonian
+    H = getHeye(k(1,:), G) + V_dG;
+
+    % Get eigenvalues and eigenvectors
+    [eigVecs, eigs] = eig(H);
+
+    eigs = diag(eigs);
+    
+    % Find index of the minimal eigenvalue
+    index = find(eigs == min(eigs));
+
+    % Get the minimal eigenvalue in Hartree energy
+    minEig(kNum) = eigs(index);
+    
+end
+
+
+plot(minEig);
+
+xlabel('k-vectors');
+ylabel('Energy [eV]');
+title('Band structure');
+
+%% Task 2: Nice plot
+
+set(gcf,'renderer','painters','PaperPosition',[0 0 12 7]);
+contourf(r(:)/sqrt(2), r(:), potInPlan',20,'LineStyle','none')
+colorbar
+
+plotTickLatex2D
+
+title('Empirical pseudopotential in Si (-1 1 0)','Interpreter','latex', 'fontsize', 14);
+X = xlabel('X = Y,  h = k [\AA]', 'Interpreter','latex', 'fontsize', 12);
+Y = ylabel('Z, l = 0 [\AA]','Interpreter','latex', 'fontsize', 12);
+set(Y, 'Units', 'Normalized', 'Position', [-0.09, 0.5, 0]);
+set(X, 'Units', 'Normalized', 'Position', [0.5, -0.05, 0]);
+
+print(gcf,'-depsc2','task1.eps')
 
 %% Task 3: The valence electron charge density
 
