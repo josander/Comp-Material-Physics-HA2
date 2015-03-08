@@ -85,7 +85,6 @@ set(X, 'Units', 'Normalized', 'Position', [0.5, -0.05, 0]);
 print(gcf,'-depsc2','task1.eps')
 
 %% Task 2: Get band structure
-
 clc
 
 % Lattice parameter [Å]
@@ -113,24 +112,38 @@ Ecut = 1000;              % [au]
 % Define G-vectors for which the structure factor > zero
 [G] = constructGbig(a, maxValue, k(3,:), Ecut);
 
-Gsize = size(G)
-(2*maxValue+1)^3+1
+Gsize = size(G);
+(2*maxValue+1)^3+1;
 
-[dG v_dG] = getDG(G);
+% Get dG ang form factor for dG
+[dG, v_dG] = getDG(G);
+
+dGsize = size(dG);
 
 % Get the structure factor in reciprocal space
-for i = 1:Gsize(1)
-        S_G(i) = 2*cos(G(i,:)*d(1,:)');
+for i = 1:dGsize(1)
+    for j = 1:dGsize(1)
+        S_dG(i,j) = 2*cos([dG(i,j,1) dG(i,j,2) dG(i,j,3)]*d(1,:)');
+    end
 end
 
+V_dG = v_dG * S_dG;
+
+H1 = getHeye(k(1,:), G) + V_dG;
+H2 = getHeye(k(2,:), G) + V_dG;
+H3 = getHeye(k(3,:), G) + V_dG;
+
+[eigVecs1, eigs1] = eig(H1);
+[eigVecs2, eigs2] = eig(H2);
+[eigVecs3, eigs3] = eig(H3);
+
+eigs1 = diag(eigs1);
+eigs2 = diag(eigs2);
+eigs3 = diag(eigs3);
+
+
+
 %%
-tic
-V_dG = getV_dG(V_r, dG, r);
-toc
-
-
-Ham = 1;
-
 
 % The symmetry points in k-space
 Gamma = 2*pi/a*[0 0 0];
@@ -138,6 +151,10 @@ X = 2*pi/a*[1 0 0];
 W = 2*pi/a*[1 0.5 1];
 L = 2*pi/a*[0.5 0.5 0.5];
 K = 2*pi/a*[0.75 0.75 0];
+
+
+
+
 
 %% Task 3: The valence electron charge density
 
