@@ -172,7 +172,6 @@ maxValue = 2;
 % Define E cut off
 Ecut = 1000;              % [au]
 
-
 % The symmetry points in k-space
 Gamma = 2*pi/a*[0 0 0];
 X = 2*pi/a*[1 0 0];
@@ -180,8 +179,7 @@ W = 2*pi/a*[1 0.5 1];
 L = 2*pi/a*[0.5 0.5 0.5];
 K = 2*pi/a*[0.75 0.75 0];
 
-
-sPoints =[Gamma ;X ; W ;L;Gamma; K ;Gamma]; 
+sPoints =[Gamma; X; W; L; Gamma; K; Gamma]; 
 kMat = [0 0 0];
 step = 0.01;
 n = 1;
@@ -207,7 +205,9 @@ end
 minEig = zeros(length(kMat),1);
 
 for kNum = 1:length(kMat)
+    
     kNum
+    
     % Define G-vectors for which the structure factor > zero
     [G] = constructGbig(a, maxValue, kMat(kNum,:), Ecut);
 
@@ -228,12 +228,14 @@ for kNum = 1:length(kMat)
     V_dG = v_dG * S_dG;
 
     % Get Hamiltonian
-    H = getHeye(k(1,:), G) + V_dG;
+    H = getHeye(kMat(kNum,:), G) + V_dG;
 
     % Get eigenvalues and eigenvectors
     [eigVecs, eigs] = eig(H);
 
     eigs = diag(eigs);
+    
+    
     
     % Find index of the minimal eigenvalue
     index = find(eigs == min(eigs));
@@ -241,10 +243,12 @@ for kNum = 1:length(kMat)
     % Get the minimal eigenvalue in Hartree energy
     minEig(kNum) = eigs(index);
     
+    kVec(kNum) = 0.01*kNum;
+    
 end
 
 
-plot(minEig);
+plot(kVec, minEig);
 
 xlabel('k-vectors');
 ylabel('Energy [eV]');
