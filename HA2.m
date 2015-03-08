@@ -116,15 +116,12 @@ Ecut = 1000;              % [au]
 Gsize = size(G)
 (2*maxValue+1)^3+1
 
-dG = [];
+[dG v_dG] = getDG(G);
 
-tic
-for m = 1:Gsize(1)
-    for n = 1:Gsize(1)
-        dG(m,n) = norm(G(m,:) - G(n,:));
-    end
+% Get the structure factor in reciprocal space
+for i = 1:Gsize(1)
+        S_G(i) = 2*cos(G(i,:)*d(1,:)');
 end
-toc
 
 %%
 tic

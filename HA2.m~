@@ -126,7 +126,10 @@ for m = 1:Gsize(1)
 end
 toc
 
-
+% Get the structure factor in reciprocal space
+for i = 1:Gsize(1)
+        S_G(i) = 2*cos(G(i,:)*d(1,:)');
+end
 
 %%
 tic
