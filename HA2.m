@@ -105,10 +105,10 @@ d(1,:) = a/8*[1 1 1];
 d(2,:) = -a/8*[1 1 1]; 
 
 % Maxvalue in the G-vector
-maxValue = 5;
+maxValue = 2;
 
 % Define E cut off
-Ecut = 100;              % [au]
+Ecut = 1000;              % [au]
 
 % Define G-vectors for which the structure factor > zero
 [G] = constructGbig(a, maxValue, k(3,:), Ecut);
@@ -121,12 +121,12 @@ dG = [];
 tic
 for m = 1:Gsize(1)
     for n = 1:Gsize(1)
-        dG(m,n,:) = G(m,:) - G(n,:);
+        dG(m,n) = norm(G(m,:) - G(n,:));
     end
 end
 toc
 
-
+%%
 tic
 V_dG = getV_dG(V_r, dG, r);
 toc
