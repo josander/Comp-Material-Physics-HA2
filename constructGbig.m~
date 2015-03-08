@@ -1,14 +1,14 @@
 function [G] = constructGbig(a, maxValue, k, Ecut)
 
 % Constants
-hbar = 1;                   % [au]
-me = 1;                     % [au]
+hbar = 6.582119 * 10^(-16); % [eV s]
+me = 1822.88839;            % [u]
 
 % Basis vectors in the reciprocal space
 b = [-1 1 1; 1 -1 1; 1 1 -1];
 
 % First G-vector
-G = [];
+G1(1,:) = [0 0 0];
 
 % Find different G-vectors where h,k,l all odd or all even
 for i = -maxValue:maxValue
@@ -21,21 +21,21 @@ for i = -maxValue:maxValue
 
             if mod(temp(1),2) == 0 && mod(temp(2),2) == 0 && mod(temp(3),2) == 0
                 
-                E = hbar^2/(2*me)*norm(k + 2*pi/a*temp)^2;
+                E = hbar^2/(2*me)*norm(k + 2*pi/a*G1(end,:))^2;
 
                 if E < Ecut
                 
-                    G(end+1,:) = temp;
+                    G1(end+1,:) = temp;
                 
                 end
 
            elseif mod(temp(1),2) == 1 && mod(temp(2),2) == 1 && mod(temp(3),2) == 1
 
-                E = hbar^2/(2*me)*norm(k + 2*pi/a*temp)^2;
+                E = hbar^2/(2*me)*norm(k + 2*pi/a*G1(end,:))^2;
 
                 if E < Ecut
                 
-                    G(end+1,:) = temp;
+                    G1(end+1,:) = temp;
                 
                 end
 
@@ -48,6 +48,6 @@ for i = -maxValue:maxValue
 end
 
 % Include the factor
-%G = 2*pi/a*G;
+G = 2*pi/a*G;
 
 end
