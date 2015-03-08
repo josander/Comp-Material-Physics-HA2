@@ -48,6 +48,6 @@ for i = -maxValue:maxValue
 end
 
 % Include the factor
-%G = 2*pi/a*G;
+G = 2*pi/a*G;
 
 end
