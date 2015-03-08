@@ -1,5 +1,6 @@
 %% Home assignment 2
 % Task 1: Plot the periodic potential in the plane (-1 1 0)
+set(0, 'defaultTextInterpreter', 'latex');
 
 clc
 clear all
@@ -129,12 +130,7 @@ for i = 1:dGsize(1)
     end
 end
 
-<<<<<<< HEAD
 %%
-kMat = [0 0 0];
-step = 0.01;
-n = 1;
-=======
 V_dG = v_dG * S_dG;
 
 H1 = getHeye(k(1,:), G) + V_dG;
@@ -162,6 +158,9 @@ a = 5.43;
 hbar = 1;                   % [au]
 me = 1;                     % [au]
 
+% 
+plotNumBands = 10;
+
 % Basis vectors
 d(1,:) = a/8*[1 1 1];         
 d(2,:) = -a/8*[1 1 1]; 
@@ -172,7 +171,6 @@ maxValue = 2;
 % Define E cut off
 Ecut = 1000;              % [au]
 
-
 % The symmetry points in k-space
 Gamma = 2*pi/a*[0 0 0];
 X = 2*pi/a*[1 0 0];
@@ -180,10 +178,10 @@ W = 2*pi/a*[1 0.5 1];
 L = 2*pi/a*[0.5 0.5 0.5];
 K = 2*pi/a*[0.75 0.75 0];
 
-tickLable = {'\Gamma','X','W', 'L', '\Gamma', 'K', 'Gamma'};
+tickLable = {'$\Gamma$','X','W', 'L', '$\Gamma$', 'K', '$\Gamma$'};
 sPoints =[Gamma ;X ; W ;L;Gamma; K ;Gamma]; 
 kMat = [0 0 0];
-step = 0.01;
+step = 0.001;
 n = 1;
 tickPoint = [n];
 
@@ -202,14 +200,15 @@ for i = 2:7
     tickPoint = [tickPoint (n-1)];
     
 end
-%%
+
 
 
 % Allocate memory
 minEig = zeros(length(kMat),1);
 
 for kNum = 1:length(kMat)
-    kNum
+   
+    
     % Define G-vectors for which the structure factor > zero
     [G] = constructGbig(a, maxValue, kMat(kNum,:), Ecut);
 
@@ -230,28 +229,43 @@ for kNum = 1:length(kMat)
     V_dG = v_dG * S_dG;
 
     % Get Hamiltonian
-    H = getHeye(k(1,:), G) + V_dG;
+    H = getHeye(kMat(kNum,:), G) + V_dG;
 
     % Get eigenvalues and eigenvectors
     [eigVecs, eigs] = eig(H);
 
     eigs = diag(eigs);
     
-    % Find index of the minimal eigenvalue
-    index = find(eigs == min(eigs));
+    for nBands = 1:plotNumBands
+        
+        % Find index of the minimal eigenvalue
+        index = find(eigs == min(eigs));
 
-    % Get the minimal eigenvalue in Hartree energy
-    minEig(kNum) = eigs(index);
+        % Get the minimal eigenvalue in Hartree energy
+        minEig(kNum, nBands) = eigs(index);
+        
+        % Set the lowest value to something big
+        eigs(index) = 1000;
+    
+    end
+    
     
 end
 
+set(0, 'defaultTextInterpreter', 'latex');
 
 plot(minEig);
-
-xlabel('k-vectors');
+set(gca,'XTick',tickPoint)
+set(gca,'XTickLabel',tickLable)
+set(gca,'XGrid','on')
+axis([1 length(kMat) min(min(minEig)) max(max(minEig))])
+xlabel('\textbf{k}-vectors','fontsize', 14);
 ylabel('Energy [eV]');
 title('Band structure');
 
+plotTickLatex2D
+
+print(gcf,'-depsc2','bandstruc.eps')
 %% Task 2: Nice plot
 
 set(gcf,'renderer','painters','PaperPosition',[0 0 12 7]);
