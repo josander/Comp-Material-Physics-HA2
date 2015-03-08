@@ -78,8 +78,8 @@ colorbar
 plotTickLatex2D
 
 title('Empirical pseudopotential in Si (-1 1 0)','Interpreter','latex', 'fontsize', 14);
-X = xlabel('X = Y,  h = k [\AA]', 'Interpreter','latex', 'fontsize', 12)
-Y = ylabel('Z, l = 0 [\AA]','Interpreter','latex', 'fontsize', 12)
+X = xlabel('X = Y,  h = k [\AA]', 'Interpreter','latex', 'fontsize', 12);
+Y = ylabel('Z, l = 0 [\AA]','Interpreter','latex', 'fontsize', 12);
 set(Y, 'Units', 'Normalized', 'Position', [-0.09, 0.5, 0]);
 set(X, 'Units', 'Normalized', 'Position', [0.5, -0.05, 0]);
 
