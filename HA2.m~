@@ -33,12 +33,10 @@ end
 V_G = v_G.*S_G;
 
 % Number of grid points
-nPoints = 100
+nPoints = 50;
 
 % Get vector for the 3D space
-r(1,:) = linspace(-8,8,nPoints);
-r(2,:) = linspace(-8,8,nPoints);
-r(3,:) = linspace(-8,8,nPoints);
+r = linspace(-8,8,nPoints);
 
 % Initialise with zeros
 V_r = zeros(nPoints, nPoints, nPoints);
@@ -50,8 +48,7 @@ for l = 1:length(r)
     for m = 1:length(r)
         for n = 1:length(r)
             for i = 1:Gsize(1)
-                %V_r(l,l,n) =  V_r(l,l,n) + V_G(1,i) * exp(i*G(i,:)*[r(1,l) r(1,l) r(2,n)]');
-                V_r(l,m,n) =  V_r(l,m,n) + V_G(1,i) * cos(G(i,:)*[r(1,l) r(1,l) r(2,n)]');
+                V_r(l,m,n) =  V_r(l,m,n) + V_G(1,i) * cos(G(i,:)*[r(l) r(m) r(n)]');
             end
         end
     end
@@ -65,7 +62,7 @@ for i = 1:length(r)
 end
 
 % Plot the potential in the plane
-contourf(r(1,:)*sqrt(2), r(1,:), potInPlan',20,'LineStyle','none')
+contourf(r(:)*sqrt(2), r(:), potInPlan',20,'LineStyle','none')
 colorbar
 
 xlabel('Z, l = 0')
@@ -74,14 +71,14 @@ ylabel('X = Y, h = k')
 %% Task 1: Nice plot
 
 set(gcf,'renderer','painters','PaperPosition',[0 0 12 7]);
-contourf(r(1,:)/sqrt(2), r(1,:), potInPlan',20,'LineStyle','none')
+contourf(r(:)/sqrt(2), r(:), potInPlan',20,'LineStyle','none')
 colorbar
 
 plotTickLatex2D
 
 title('Empirical pseudopotential in Si (-1 1 0)','Interpreter','latex', 'fontsize', 14);
-X = xlabel('X = Y,  h = k [\AA]', 'Interpreter','latex', 'fontsize', 12)
-Y = ylabel('Z, l = 0 [\AA]','Interpreter','latex', 'fontsize', 12)
+X = xlabel('X = Y,  h = k [\AA]', 'Interpreter','latex', 'fontsize', 12);
+Y = ylabel('Z, l = 0 [\AA]','Interpreter','latex', 'fontsize', 12);
 set(Y, 'Units', 'Normalized', 'Position', [-0.09, 0.5, 0]);
 set(X, 'Units', 'Normalized', 'Position', [0.5, -0.05, 0]);
 
@@ -90,7 +87,6 @@ print(gcf,'-depsc2','task1.eps')
 %% Task 2: Get band structure
 
 clc
-clear all
 
 % Lattice parameter [Å]
 a = 5.43;   
@@ -109,7 +105,7 @@ d(1,:) = a/8*[1 1 1];
 d(2,:) = -a/8*[1 1 1]; 
 
 % Maxvalue in the G-vector
-maxValue = 10;
+maxValue = 5;
 
 % Define E cut off
 Ecut = 100;              % [au]
@@ -117,8 +113,27 @@ Ecut = 100;              % [au]
 % Define G-vectors for which the structure factor > zero
 [G] = constructGbig(a, maxValue, k(3,:), Ecut);
 
-size(G)
+Gsize = size(G)
 (2*maxValue+1)^3+1
+
+dG = [];
+
+tic
+for m = 1:Gsize(1)
+    for n = 1:Gsize(1)
+        dG(m,n,:) = G(m,:) - G(n,:);
+    end
+end
+toc
+%%
+
+tic
+V_dG = getV_dG(V_r, dG, r);
+toc
+
+
+Ham = 1;
+
 
 % The symmetry points in k-space
 Gamma = 2*pi/a*[0 0 0];

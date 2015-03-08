@@ -1,0 +1,7 @@
+function V_dG = getV_dG(V_r, dG, r)
+
+
+V_dG = trapz(V_r*exp(-i*dG*r));
+
+
+end
