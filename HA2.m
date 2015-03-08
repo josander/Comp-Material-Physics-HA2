@@ -11,24 +11,12 @@ a = 5.43;
 d(1,:) = a/8*[1 1 1];         
 d(2,:) = -a/8*[1 1 1]; 
 
+% Maxvalue in the G-vector
+maxValue = 3;
+
 % Define G-vectors for which the structure factor > zero
-G = getG(a);
+[G v_G] = constructG(a, maxValue);
 
-biggest = norm(G(end,:));
-
-% Check if G vector is wrong
-for u = 1:length(G)-1
-    if( norm(G(u,:)) > biggest)
-        output = ['Error in G, row ', num2str(u)];
-    	disp(output);
-    end
-end
-
-% Define form factor for the different G-vectors
-v_G = getFormFact(G, a);
-
-
-%%
 % Get sizes of the arrays
 Gsize = size(G);
 dSize = size(d);
@@ -38,105 +26,95 @@ S_G = zeros(1,Gsize(1));
 
 % Get the structure factor in reciprocal space
 for i = 1:Gsize(1)
-    for j = 1:dSize(1)
-        %S_G(i) = S_G(i) + exp(-i*(G(i,:)*d(j,:)'));
-        S_G(i) = S_G(i) + cos(G(i,:)*d(j,:)');
-    end
+        S_G(i) = 2*cos(G(i,:)*d(1,:)');
 end
-
 
 % Get potential in reciprocal space
 V_G = v_G.*S_G;
 
 % Number of grid points
-nPoints = 100;
+nPoints = 100
 
 % Get vector for the 3D space
-for i = 1:3
-    r(i,:) = linspace(-5,5,nPoints);
-end
+r(1,:) = linspace(-8,8,nPoints);
+r(2,:) = linspace(-8,8,nPoints);
+r(3,:) = linspace(-8,8,nPoints);
 
 % Initialise with zeros
 V_r = zeros(nPoints, nPoints, nPoints);
 
+tic
+
 % Calc potential in space
 for l = 1:length(r)
-    for m = 1:length(r)
-        for n = 1:length(r)
-            for i = 1:Gsize(1)
-                %V_r(l,m,n) =  V_r(l,m,n) + V_G(1,i) * real(exp(i*G(i,:)*[r(1,l) r(2,m) r(3,n)]'));
-                V_r(l,m,n) =  V_r(l,m,n) + V_G(1,i) * cos(G(i,:)*[r(1,l) r(2,m) r(3,n)]');
-            end
+    for n = 1:length(r)
+        for i = 1:Gsize(1)
+            %V_r(l,l,n) =  V_r(l,l,n) + V_G(1,i) * exp(i*G(i,:)*[r(1,l) r(1,l) r(2,n)]');
+            V_r(l,l,n) =  V_r(l,l,n) + V_G(1,i) * cos(G(i,:)*[r(1,l) r(1,l) r(2,n)]');
         end
     end
 end
 
+toc
+
 % Get the potential in the plane
 for i = 1:length(r)
-    potInPlan(i,:) = V_r(i,i,:); 
+    potInPlan(i,:) = real(V_r(i,i,:)); 
 end
 
-figure(1)
-
 % Plot the potential in the plane
-surf(r(1,:), r(1,:), potInPlan)
-%contourf(V_r)
+contourf(r(1,:)*sqrt(2), r(1,:), potInPlan',20,'LineStyle','none')
+colorbar
 
-xlabel('X')
-ylabel('Y')
-zlabel('Z')
+xlabel('Z, l = 0')
+ylabel('X = Y, h = k')
 
-shg
+%% Task 1: Nice plot
+
+set(gcf,'renderer','painters','PaperPosition',[0 0 12 7]);
+contourf(r(1,:)/sqrt(2), r(1,:), potInPlan',20,'LineStyle','none')
+colorbar
+
+plotTickLatex2D
+
+title('Empirical pseudopotential in Si (-1 1 0)','Interpreter','latex', 'fontsize', 14);
+X = xlabel('X = Y,  h = k [\AA]', 'Interpreter','latex', 'fontsize', 12)
+Y = ylabel('Z, l = 0 [\AA]','Interpreter','latex', 'fontsize', 12)
+set(Y, 'Units', 'Normalized', 'Position', [-0.09, 0.5, 0]);
+set(X, 'Units', 'Normalized', 'Position', [0.5, -0.05, 0]);
+
+print(gcf,'-depsc2','task1.eps')
 
 %% Task 2: Get band structure
 
 clc
+
+% Constants
+hbar = 6.582119 * 10^(-16); % [eV s]
+me = 1822.88839;            % [u]
 
 % Generate k-vectors
 k(1,:) = [0 0 0];
 k(2,:) = pi/a*[-1 1 1];
 k(3,:) = 2*pi/a*[0 0 1];
 
-% Generate a lot of G-vectors
-% FCC: all ever or all odd
-G(1,:) = 2*pi/a*[1 1 1];
-G(2,:) = 2*pi/a*[1 1 3];
-G(3,:) = 2*pi/a*[1 3 1];
-G(4,:) = 2*pi/a*[3 1 1];
-G(5,:) = 2*pi/a*[2 2 2];
-G(6,:) = 2*pi/a*[3 3 1];
-G(7,:) = 2*pi/a*[1 3 3];
-G(8,:) = 2*pi/a*[3 1 3];
-G(9,:) = 2*pi/a*[2 2 4];
-G(10,:) = 2*pi/a*[2 4 2];
-G(11,:) = 2*pi/a*[4 2 2];
-G(12,:) = 2*pi/a*[3 3 3];
-G(13,:) = 2*pi/a*[1 5 1];
-G(14,:) = 2*pi/a*[1 1 5];
-G(15,:) = 2*pi/a*[5 1 1];
-G(16,:) = 2*pi/a*[1 3 5];
-G(17,:) = 2*pi/a*[5 3 1];
-G(18,:) = 2*pi/a*[1 5 3];
-G(19,:) = 2*pi/a*[5 1 3];
-G(20,:) = 2*pi/a*[3 1 5];
-G(21,:) = 2*pi/a*[3 5 1];
-G(22,:) = 2*pi/a*[4 2 4];
-G(23,:) = 2*pi/a*[2 4 4];
-G(24,:) = 2*pi/a*[4 4 2];
-G(25,:) = 2*pi/a*[5 3 3];
-G(26,:) = 2*pi/a*[3 3 5];
-G(27,:) = 2*pi/a*[3 5 3];
+clc
+clear all
 
-biggest = norm(G(length(G),:));
+% Lattice parameter [Å]
+a = 5.43;   
 
-% Check if G vector is wrong
-for u = 1:length(G)-1
-    if( norm(G(u,:)) > biggest)
-        output = ['Error in G, row ', num2str(u)];
-    	disp(output);
-    end
-end
+% Basis vectors
+d(1,:) = a/8*[1 1 1];         
+d(2,:) = -a/8*[1 1 1]; 
 
+% Maxvalue in the G-vector
+maxValue = 3;
+
+% Define G-vectors for which the structure factor > zero
+[G] = constructGbig(a, maxValue)
+
+% The symmetry points in k-space
 Gamma = 2*pi/a*[0 0 0];
 X = 2*pi/a*[1 0 0];
 W = 2*pi/a*[1 0.5 1];
