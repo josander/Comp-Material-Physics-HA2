@@ -180,12 +180,12 @@ W = 2*pi/a*[1 0.5 1];
 L = 2*pi/a*[0.5 0.5 0.5];
 K = 2*pi/a*[0.75 0.75 0];
 
-
+tickLable = {'\Gamma','X','W', 'L', '\Gamma', 'K', 'Gamma'};
 sPoints =[Gamma ;X ; W ;L;Gamma; K ;Gamma]; 
 kMat = [0 0 0];
 step = 0.01;
 n = 1;
-
+tickPoint = [n];
 
 for i = 2:7
    
@@ -196,11 +196,13 @@ for i = 2:7
     
         kMat = [kMat; kMat(n,:) + wVector*step];
         
-        n = n + 1;
-       
-   end
+        n = n + 1;  
+   
+    end
+    tickPoint = [tickPoint (n-1)];
+    
 end
-
+%%
 
 
 % Allocate memory
