@@ -158,8 +158,6 @@ a = 5.43;
 hbar = 1;                   % [au]
 me = 1;                     % [au]
 
-% 
-plotNumBands = 10;
 
 % Basis vectors
 d(1,:) = a/8*[1 1 1];         
@@ -181,17 +179,17 @@ K = 2*pi/a*[0.75 0.75 0];
 tickLable = {'$\Gamma$','X','W', 'L', '$\Gamma$', 'K', '$\Gamma$'};
 sPoints =[Gamma ;X ; W ;L;Gamma; K ;Gamma]; 
 kMat = [0 0 0];
-step = 0.001;
+step = 0.0001;
 n = 1;
+plotNumBands = 6;
+
 tickPoint = [n];
 
 for i = 2:7
-   
-    wVector = (sPoints(i,:) - kMat(n,:))/norm(sPoints(i,:) - kMat(n,:));
-    
-    
-    while norm(sPoints(i,:) - kMat(n,:)) > 0.01  
-    
+    wVector = (sPoints(i,:) - kMat(n,:))/norm(sPoints(i,:) - kMat(n,:));    
+    while norm(sPoints(i,:) - kMat(n,:)) > 0.0005  
+         wVector = (sPoints(i,:) - kMat(n,:))/norm(sPoints(i,:) - kMat(n,:));    
+
         kMat = [kMat; kMat(n,:) + wVector*step];
         
         n = n + 1;  
@@ -252,6 +250,7 @@ for kNum = 1:length(kMat)
     
 end
 
+set(gcf,'renderer','painters','PaperPosition',[0 0 12 7], 'PaperUnits', 'Centimeters');
 set(0, 'defaultTextInterpreter', 'latex');
 
 plot(minEig);
