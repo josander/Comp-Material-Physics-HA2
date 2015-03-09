@@ -91,8 +91,8 @@ print(gcf,'-depsc2','task1.eps')
 clc
 clear all
 
-% Lattice parameter [Å]
-a = 5.43;   
+% Lattice parameter [au]
+a = 5.43/0.529177;   
 
 % Constants
 hbar = 1;                   % [au]
@@ -108,7 +108,7 @@ d(1,:) = a/8*[1 1 1];
 d(2,:) = -a/8*[1 1 1]; 
 
 % Maxvalue in the G-vector
-maxValue = 5;
+maxValue = 3;
 
 % Define E cut off
 EcutInitial = 4;
@@ -182,7 +182,7 @@ for Ecut = EcutInitial:dE:EcutFinal
     index3 = find(eigs3 == min(eigs3));
     
     % Get the number of the iteration
-    index = (Ecut-EcutInitial)/dE+1
+    index = (Ecut-EcutInitial)/dE+1;
 
     % Get the minimal eigenvalue in Hartree energy
     minEig1(index) = eigs1(index1);
@@ -203,7 +203,7 @@ plot(EnergyCut, minEig1, EnergyCut, minEig2, EnergyCut, minEig3);
 
 %% Task 2: Nice plot of convergence
 
-set(gcf,'renderer','painters','PaperPosition',[0 0 12 7]);
+set(gcf,'renderer','painters','PaperPosition',[0 0 12 7.5]);
 plot(EnergyCut, minEig1, EnergyCut, minEig2, EnergyCut, minEig3);
 xlim([EcutInitial EcutFinal]);
 
@@ -213,7 +213,7 @@ title('Convergence in eigenvalues with respect to $E_{cut}$','Interpreter','late
 X = xlabel('$E_{cut} [au]$', 'Interpreter','latex', 'fontsize', 12);
 Y = ylabel('Energy [au]','Interpreter','latex', 'fontsize', 12);
 set(Y, 'Units', 'Normalized', 'Position', [-0.09, 0.5, 0]);
-set(X, 'Units', 'Normalized', 'Position', [0.5, -0.05, 0]);
+set(X, 'Units', 'Normalized', 'Position', [0.5, -0.06, 0]);
 
 print(gcf,'-depsc2','convergence.eps')
 
@@ -222,7 +222,7 @@ print(gcf,'-depsc2','convergence.eps')
 clc
 
 % Lattice parameter [au]
-a = 5.43/0.52917721092;   
+a = 5.43/0.529177;   
 
 % Constants
 hbar = 1;                   % [au]
@@ -236,10 +236,10 @@ d(1,:) = a/8*[1 1 1];
 d(2,:) = -a/8*[1 1 1]; 
 
 % Maxvalue in the G-vector
-maxValue = 4;
+maxValue = 5;
 
 % Define E cut off
-Ecut = 20;              % [au]
+Ecut = 15;              % [au]
 
 % The symmetry points in k-space
 Gamma = 2*pi/a*[0 0 0];
@@ -289,6 +289,8 @@ for kNum = 1:length(kMat)
 
     % Get size of dG
     dGsize = size(dG);
+    
+    S_dG = zeros(dGsize(1),dGsize(1));
 
     % Get the structure factor in reciprocal space
     for i = 1:dGsize(1)
@@ -317,7 +319,7 @@ for kNum = 1:length(kMat)
         minEig(kNum, nBands) = eigs(index);
         
         % Set the lowest value to something big
-        eigs(index) = 1000;
+        eigs(index) = 100;
     
     end
     
