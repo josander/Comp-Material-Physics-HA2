@@ -1,4 +1,4 @@
-function [ kMat tickPoint ] = getkMat( sPoints, step )
+function [ kMat, tickPoint ] = getkMat( sPoints, step )
 %GETKMAT Summary of this function goes here
 %   Detailed explanation goes here
 

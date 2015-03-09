@@ -113,7 +113,7 @@ maxValue = 5;
 % Define E cut off
 EcutInitial = 4;
 EcutFinal = 20;              % [au]
-dE = 0.5;
+dE = 0.25;
 
 for Ecut = EcutInitial:dE:EcutFinal
     
@@ -182,7 +182,7 @@ for Ecut = EcutInitial:dE:EcutFinal
     index3 = find(eigs3 == min(eigs3));
     
     % Get the number of the iteration
-    index = (Ecut-EcutInitial)/dE+1;
+    index = (Ecut-EcutInitial)/dE+1
 
     % Get the minimal eigenvalue in Hartree energy
     minEig1(index) = eigs1(index1);
@@ -221,21 +221,16 @@ print(gcf,'-depsc2','convergence.eps')
 
 clc
 
-% Lattice parameter [Å]
-a = 5.43;   
+% Lattice parameter [au]
+a = 5.43/0.52917721092;   
 
 % Constants
 hbar = 1;                   % [au]
 me = 1;                     % [au]
 
-<<<<<<< HEAD
-=======
 % Define how many of the lowest bands that should be plotted
 plotNumBands = 8;
->>>>>>> 19bc6d5062081e8078acc1716fa28fe21cee7145
 
-% Define how many of the lowest bands that should be plotted
-plotNumBands = 6;
 % Basis vectors
 d(1,:) = a/8*[1 1 1];         
 d(2,:) = -a/8*[1 1 1]; 
@@ -253,41 +248,14 @@ W = 2*pi/a*[1 0.5 1];
 L = 2*pi/a*[0.5 0.5 0.5];
 K = 2*pi/a*[0.75 0.75 0];
 
-<<<<<<< HEAD
+
 tickLable = {'$\Gamma$','X','W', 'L','$\Gamma$', 'K', '$\Gamma$'};
+%Define the path in k-space
 sPoints =[Gamma ;X ; W ;L;Gamma; K ;Gamma]; 
 
 step = 0.001;
-
-[kMat tickPoint] = getkMat(sPoints, step);
-=======
-tickLable = {'$\Gamma$','X','W', 'L', 'K', '$\Gamma$'};
-sPoints =[Gamma ;X ; W; L; K; Gamma]; 
-kMat = [0 0 0];
-step = 0.05;                % [au]
-n = 1;
-tickPoint = [n];
-
-for i = 2:length(sPoints)
-   
-    wVector = (sPoints(i,:) - kMat(n,:))/norm(sPoints(i,:) - kMat(n,:));
-
-    while norm(sPoints(i,:) - kMat(n,:)) > 0.05  
-    
-        kMat = [kMat; kMat(n,:) + wVector*step];
-        
-        n = n + 1;  
-   
-    end
-    
-    tickPoint = [tickPoint (n-1)];
-    
-    disp(num2str(i));
-    
-end
->>>>>>> 19bc6d5062081e8078acc1716fa28fe21cee7145
-
-
+% Get the path in k-space
+[kMat, tickPoint] = getkMat(sPoints, step);
 
 % Allocate memory
 minEig = zeros(length(kMat),1);
@@ -356,11 +324,8 @@ set(gca,'XTickLabel',tickLable)
 set(gca,'XGrid','on')
 axis([1 length(kMat) min(min(minEig)) max(max(minEig))])
 xlabel('\textbf{k}-vectors','fontsize', 14);
-<<<<<<< HEAD
 ylabel('Energy [Hartree]');
-=======
-ylabel('Energy [au]');
->>>>>>> 19bc6d5062081e8078acc1716fa28fe21cee7145
+
 title('Band structure');
 
 plotTickLatex2D
