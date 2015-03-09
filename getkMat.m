@@ -10,7 +10,7 @@ tickPoint = [n];
 
 for i = 2:length(sPoints)
     
-    while norm(sPoints(i,:) - kMat(n,:)) > 5*step
+    while norm(sPoints(i,:) - kMat(n,:)) > 2*step
         wVector = (sPoints(i,:) - kMat(n,:))/norm(sPoints(i,:) - kMat(n,:));    
 
 
