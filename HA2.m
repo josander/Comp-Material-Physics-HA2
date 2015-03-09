@@ -37,7 +37,7 @@ V_G = v_G.*S_G;
 nPoints = 50;
 
 % Get vector for the 3D space
-r = linspace(-8,8,nPoints);
+r = linspace(-6,6,nPoints);
 
 % Initialise with zeros
 V_r = zeros(nPoints, nPoints, nPoints);
@@ -71,8 +71,8 @@ ylabel('X = Y, h = k')
 
 %% Task 1: Nice plot
 
-set(gcf,'renderer','painters','PaperPosition',[0 0 12 7]);
-contourf(r(:)/sqrt(2), r(:), potInPlan',25,'LineStyle','none')
+set(gcf,'renderer','painters','PaperPosition',[0 0 12 8]);
+contourf(r(:)/sqrt(2), r(:), potInPlan',35,'LineStyle','none')
 colorbar
 
 plotTickLatex2D
@@ -81,7 +81,7 @@ title('Empirical pseudopotential in Si (-1 1 0)','Interpreter','latex', 'fontsiz
 X = xlabel('X = Y [\AA],  h = k', 'Interpreter','latex', 'fontsize', 12);
 Y = ylabel('Z [\AA], l = 0','Interpreter','latex', 'fontsize', 12);
 set(Y, 'Units', 'Normalized', 'Position', [-0.09, 0.5, 0]);
-set(X, 'Units', 'Normalized', 'Position', [0.5, -0.05, 0]);
+set(X, 'Units', 'Normalized', 'Position', [0.5, -0.055, 0]);
 
 print(gcf,'-depsc2','task1.eps')
 
@@ -108,12 +108,12 @@ d(1,:) = a/8*[1 1 1];
 d(2,:) = -a/8*[1 1 1]; 
 
 % Maxvalue in the G-vector
-maxValue = 3;
+maxValue = 5;
 
 % Define E cut off
-EcutInitial = 10;
-EcutFinal = 250;              % [au]
-dE = 5;
+EcutInitial = 4;
+EcutFinal = 20;              % [au]
+dE = 0.5;
 
 for Ecut = EcutInitial:dE:EcutFinal
     
@@ -186,8 +186,8 @@ for Ecut = EcutInitial:dE:EcutFinal
 
     % Get the minimal eigenvalue in Hartree energy
     minEig1(index) = eigs1(index1);
-    minEig2(index) = eigs1(index2);
-    minEig3(index) = eigs1(index3);
+    minEig2(index) = eigs2(index2);
+    minEig3(index) = eigs3(index3);
         
     % Save the energy cut off
     EnergyCut(index) = Ecut;
@@ -229,7 +229,7 @@ hbar = 1;                   % [au]
 me = 1;                     % [au]
 
 % Define how many of the lowest bands that should be plotted
-plotNumBands = 3;
+plotNumBands = 8;
 
 % Basis vectors
 d(1,:) = a/8*[1 1 1];         
@@ -249,28 +249,27 @@ L = 2*pi/a*[0.5 0.5 0.5];
 K = 2*pi/a*[0.75 0.75 0];
 
 tickLable = {'$\Gamma$','X','W', 'L', 'K', '$\Gamma$'};
-sPoints =[Gamma ;X ; W ;L; K ;Gamma]; 
+sPoints =[Gamma ;X ; W; L; K; Gamma]; 
 kMat = [0 0 0];
-step = 0.01;                % [au]
+step = 0.05;                % [au]
 n = 1;
 tickPoint = [n];
 
 for i = 2:length(sPoints)
    
     wVector = (sPoints(i,:) - kMat(n,:))/norm(sPoints(i,:) - kMat(n,:));
-    
-    disp('Innan while loop');
-    
-    while norm(sPoints(i,:) - kMat(n,:)) > 0.01  
+
+    while norm(sPoints(i,:) - kMat(n,:)) > 0.05  
     
         kMat = [kMat; kMat(n,:) + wVector*step];
         
         n = n + 1;  
    
     end
+    
     tickPoint = [tickPoint (n-1)];
     
-    disp('Här');
+    disp(num2str(i));
     
 end
 
@@ -340,7 +339,7 @@ set(gca,'XTickLabel',tickLable)
 set(gca,'XGrid','on')
 axis([1 length(kMat) min(min(minEig)) max(max(minEig))])
 xlabel('\textbf{k}-vectors','fontsize', 14);
-ylabel('Energy [eV]');
+ylabel('Energy [au]');
 title('Band structure');
 
 plotTickLatex2D
