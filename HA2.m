@@ -129,12 +129,11 @@ for i = 1:dGsize(1)
     end
 end
 
-<<<<<<< HEAD
 %%
 kMat = [0 0 0];
 step = 0.01;
 n = 1;
-=======
+
 V_dG = v_dG * S_dG;
 
 H1 = getHeye(k(1,:), G) + V_dG;
@@ -149,8 +148,6 @@ eigs1 = diag(eigs1);
 eigs2 = diag(eigs2);
 eigs3 = diag(eigs3);
 
-
-
 %% Task 2: Plot band structure
 
 clc
@@ -162,8 +159,8 @@ a = 5.43;
 hbar = 1;                   % [au]
 me = 1;                     % [au]
 
-% 
-plotNumBands = 3;
+% Define how many of the lowest bands that should be plotted
+plotNumBands = 5;
 
 % Basis vectors
 d(1,:) = a/8*[1 1 1];         
@@ -191,7 +188,6 @@ n = 1;
 for i = 2:7
    
     wVector = (sPoints(i,:) - kMat(n,:))/norm(sPoints(i,:) - kMat(n,:));
-    
     
     while norm(sPoints(i,:) - kMat(n,:)) > 0.01  
     
@@ -255,10 +251,10 @@ for kNum = 1:length(kMat)
     
 end
 
-plot(kVec, minEig);
+plot(minEig);
 
 xlabel('k-vectors');
-ylabel('Energy [eV]');
+ylabel('Energy [Hartree]');
 title('Band structure');
 
 %% Task 2: Nice plot
@@ -279,4 +275,9 @@ print(gcf,'-depsc2','task1.eps')
 
 
 %% Task 3: The valence electron charge density
+
+clc
+clear all
+
+w = [1 4 3]/8;
 
