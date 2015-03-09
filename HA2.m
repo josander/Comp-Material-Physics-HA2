@@ -113,7 +113,7 @@ maxValue = 5;
 % Define E cut off
 EcutInitial = 4;
 EcutFinal = 20;              % [au]
-dE = 0.5;
+dE = 0.25;
 
 for Ecut = EcutInitial:dE:EcutFinal
     
@@ -182,7 +182,7 @@ for Ecut = EcutInitial:dE:EcutFinal
     index3 = find(eigs3 == min(eigs3));
     
     % Get the number of the iteration
-    index = (Ecut-EcutInitial)/dE+1;
+    index = (Ecut-EcutInitial)/dE+1
 
     % Get the minimal eigenvalue in Hartree energy
     minEig1(index) = eigs1(index1);
@@ -221,8 +221,8 @@ print(gcf,'-depsc2','convergence.eps')
 
 clc
 
-% Lattice parameter [Å]
-a = 5.43;   
+% Lattice parameter [au]
+a = 5.43/0.52917721092;   
 
 % Constants
 hbar = 1;                   % [au]
@@ -239,7 +239,7 @@ d(2,:) = -a/8*[1 1 1];
 maxValue = 4;
 
 % Define E cut off
-Ecut = 100;              % [au]
+Ecut = 20;              % [au]
 
 % The symmetry points in k-space
 Gamma = 2*pi/a*[0 0 0];
