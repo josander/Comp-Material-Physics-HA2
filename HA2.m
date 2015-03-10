@@ -114,7 +114,7 @@ maxValue = 5;
 % Define E cut off
 EcutInitial = 2;
 EcutFinal = 15;              % [au]
-dE = 0.1;
+dE = 1;%0.1;
 
 for Ecut = EcutInitial:dE:EcutFinal
     
@@ -168,7 +168,10 @@ for Ecut = EcutInitial:dE:EcutFinal
     min2Eig2(index) = eigs2(index2(1));
     min2Eig3(index) = eigs3(index3(1));
     
-        
+    (2*maxValue + 1)^3
+    size(G1)
+    size(G2)
+    size(G3)
     
     % Save the energy cut off
     EnergyCut(index) = Ecut;
