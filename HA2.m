@@ -6,7 +6,7 @@ clc
 clear all
 
 % Lattice parameter [Å]
-a = 5.43;   
+a = 5.43/0.529177;   
 
 % Basis vectors
 d(1,:) = a/8*[1 1 1];         
@@ -37,7 +37,7 @@ V_G = v_G.*S_G;
 nPoints = 50;
 
 % Get vector for the 3D space
-r = linspace(-6,6,nPoints);
+r = linspace(-10,10,nPoints);
 
 % Initialise with zeros
 V_r = zeros(nPoints, nPoints, nPoints);
@@ -78,8 +78,8 @@ colorbar
 plotTickLatex2D
 
 title('Empirical pseudopotential in Si (-1 1 0)','Interpreter','latex', 'fontsize', 14);
-X = xlabel('X = Y [\AA],  h = k', 'Interpreter','latex', 'fontsize', 12);
-Y = ylabel('Z [\AA], l = 0','Interpreter','latex', 'fontsize', 12);
+X = xlabel('X = Y [au],  h = k', 'Interpreter','latex', 'fontsize', 12);
+Y = ylabel('Z [au], l = 0','Interpreter','latex', 'fontsize', 12);
 set(Y, 'Units', 'Normalized', 'Position', [-0.09, 0.5, 0]);
 set(X, 'Units', 'Normalized', 'Position', [0.5, -0.055, 0]);
 
