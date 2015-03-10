@@ -90,7 +90,7 @@ clc
 clear all
 
 % Lattice parameter [au]
-a = 1*5.43/0.529177;   
+a = 5.43/0.529177;   
 
 % Constants
 hbar = 1;                   % [au]
@@ -270,8 +270,91 @@ print(gcf,'-depsc2','bandstruc.eps')
 
 %% Task 3: The valence electron charge density
 
+%% Task 4: 
+ 
 clc
-clear all
 
-w = [1 4 3]/8;
+% Lattice parameter [au]
+aTrue = 5.43/0.529177;   
 
+% Constants
+hbar = 1;                   % [au]
+me = 1;                     % [au]
+
+% Define how many of the lowest bands that should be plotted
+plotNumBands = 6;
+
+% Basis vectors
+d(1,:) = a/8*[1 1 1];         
+d(2,:) = -a/8*[1 1 1]; 
+
+% Maxvalue in the G-vector
+maxValue = 4;
+
+% Define E cut off
+Ecut = 10;              % [au]
+
+% The symmetry points in k-space
+Gamma = 2*pi/a*[0 0 0];
+X = 2*pi/a*[1 0 0];
+W = 2*pi/a*[1 0.5 0];
+L = 2*pi/a*[0.5 0.5 0.5];
+K = 2*pi/a*[0.75 0.75 0];
+
+tickLable = {'$\Gamma$','X','W', 'L','$\Gamma$', 'K', '$\Gamma$'};
+%Define the path in k-space
+sPoints =[Gamma ;X ; W ;L;Gamma; K ;Gamma]; 
+
+%Step length of the path
+step = 0.05;
+% Get the path in k-space
+[kMat, tickPoint] = getkMat(sPoints, step);
+
+% Allocate memory
+minEig = zeros(length(kMat),1);
+
+aStart = 1;
+aStep = -0.01;
+aStop = 0.9;
+
+eGap = [];
+
+for aFact = aStart:aStep:aStop
+    
+    a = aFact*aTrue;
+
+
+    for kNum = 1:length(kMat)  
+
+        % Define G-vectors for which the structure factor > zero
+        [G] = constructGbig(a, maxValue, kMat(kNum,:), Ecut);
+
+        % Get Hamiltonian
+        H = getH(a, kMat(kNum,:), G);
+
+        % Get eigenvalues and eigenvectors
+        [eigVecs, eigs] = eig(H);
+        eigs = diag(eigs);
+
+        for nBands = 1:plotNumBands
+
+            % Find index of the minimal eigenvalue
+            index = find(eigs == min(eigs));
+
+            % Get the minimal eigenvalue in Hartree energy
+            minEig(kNum, nBands) = eigs(index(1));
+
+            % Set the lowest value to something big
+            eigs(index) = 100;
+
+        end
+
+
+        fprintf('K-point: %d of %d \n aFact: %d\n',kNum,length(kMat), aFact)
+    end
+    indirectBG = min(minEig(:,5)) - max(minEig(:,4));
+    directBG = min(minEig(:,5) - minEig(:,4));
+    
+    eGap = [eGap;indirectBG directBG];
+    
+end

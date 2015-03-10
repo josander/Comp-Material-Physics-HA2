@@ -5,7 +5,7 @@ set(0, 'defaultTextInterpreter', 'latex');
 clc
 clear all
 % Lattice parameter [Å]
-a = 5.43;   
+a = 5.43/0.529177;   
 
 % Basis vectors
 d(1,:) = a/8*[1 1 1];         
@@ -36,7 +36,7 @@ V_G = v_G.*S_G;
 nPoints = 50;
 
 % Get vector for the 3D space
-r = linspace(-6,6,nPoints);
+r = linspace(-10,10,nPoints);
 
 % Initialise with zeros
 V_r = zeros(nPoints, nPoints, nPoints);
@@ -77,8 +77,8 @@ ylabel(h, 'Potential [a$_0$]','Interpreter','latex', 'fontsize', 12)
 plotTickLatex2D
 
 title('Empirical pseudopotential in Si (-1 1 0)','Interpreter','latex', 'fontsize', 14);
-X = xlabel('X = Y [\AA],  h = k', 'Interpreter','latex', 'fontsize', 12);
-Y = ylabel('Z [\AA], l = 0','Interpreter','latex', 'fontsize', 12);
+X = xlabel('X = Y [au],  h = k', 'Interpreter','latex', 'fontsize', 12);
+Y = ylabel('Z [au], l = 0','Interpreter','latex', 'fontsize', 12);
 set(Y, 'Units', 'Normalized', 'Position', [-0.09, 0.5, 0]);
 set(X, 'Units', 'Normalized', 'Position', [0.5, -0.055, 0]);
 
@@ -90,7 +90,7 @@ clc
 clear all
 
 % Lattice parameter [au]
-a = 1*5.43/0.529177;   
+a = 5.43/0.529177;   
 
 % Constants
 hbar = 1;                   % [au]
@@ -239,24 +239,19 @@ for kNum = 1:length(kMat)
     
     end
     
-    out =['K-point: ',num2str(kNum),' of ',num2str(length(kMat))];
-    disp(out);
+   
+    fprintf('K-point: %d of %d \n',kNum,length(kMat))
     
 end
-
-
-set(gcf,'renderer','painters','PaperPosition',[0 0 12 7], 'PaperUnits', 'Centimeters');
-
 plot(minEig);
 
 xlabel('k-vectors');
-ylabel('Energy [Hartree]');
-set(0, 'defaultTextInterpreter', 'latex');
+ylabel('Energy [a.u]');
 
 
 %% Task 2: Nice plot of band structure
 set(gcf,'renderer','painters','PaperPosition',[0 0 12 7], 'PaperUnits', 'Centimeters');
-
+set(0, 'defaultTextInterpreter', 'latex');
 plot(minEig);
 set(gca,'XTick',tickPoint)
 set(gca,'XTickLabel',tickLable)
@@ -273,11 +268,93 @@ set(X, 'Units', 'Normalized', 'Position', [0.5, -0.05, 0]);
 
 print(gcf,'-depsc2','bandstruc.eps')
 
-
 %% Task 3: The valence electron charge density
 
+%% Task 4: 
+ 
 clc
-clear all
 
-w = [1 4 3]/8;
+% Lattice parameter [au]
+aTrue = 5.43/0.529177;   
 
+% Constants
+hbar = 1;                   % [au]
+me = 1;                     % [au]
+
+% Define how many of the lowest bands that should be plotted
+plotNumBands = 6;
+
+% Basis vectors
+d(1,:) = a/8*[1 1 1];         
+d(2,:) = -a/8*[1 1 1]; 
+
+% Maxvalue in the G-vector
+maxValue = 4;
+
+% Define E cut off
+Ecut = 10;              % [au]
+
+% The symmetry points in k-space
+Gamma = 2*pi/a*[0 0 0];
+X = 2*pi/a*[1 0 0];
+W = 2*pi/a*[1 0.5 0];
+L = 2*pi/a*[0.5 0.5 0.5];
+K = 2*pi/a*[0.75 0.75 0];
+
+tickLable = {'$\Gamma$','X','W', 'L','$\Gamma$', 'K', '$\Gamma$'};
+%Define the path in k-space
+sPoints =[Gamma ;X ; W ;L;Gamma; K ;Gamma]; 
+
+%Step length of the path
+step = 0.05;
+% Get the path in k-space
+[kMat, tickPoint] = getkMat(sPoints, step);
+
+% Allocate memory
+minEig = zeros(length(kMat),1);
+
+aStart = 1;
+aStep = -0.005;
+aStop = 0.9;
+
+eGap = [];
+
+for aFact = aStart:aStep:aStop
+    
+    a = aFact*aTrue;
+
+
+    for kNum = 1:length(kMat)  
+
+        % Define G-vectors for which the structure factor > zero
+        [G] = constructGbig(a, maxValue, kMat(kNum,:), Ecut);
+
+        % Get Hamiltonian
+        H = getH(a, kMat(kNum,:), G);
+
+        % Get eigenvalues and eigenvectors
+        [eigVecs, eigs] = eig(H);
+        eigs = diag(eigs);
+
+        for nBands = 1:plotNumBands
+
+            % Find index of the minimal eigenvalue
+            index = find(eigs == min(eigs));
+
+            % Get the minimal eigenvalue in Hartree energy
+            minEig(kNum, nBands) = eigs(index(1));
+
+            % Set the lowest value to something big
+            eigs(index) = 100;
+
+        end
+
+
+        fprintf('K-point: %d of %d \naFact: %d of aStop %d \n',kNum,length(kMat), aFact, aStop)
+    end
+    indirectBG = min(minEig(:,5)) - max(minEig(:,4));
+    directBG = min(minEig(:,5) - minEig(:,4));
+    
+    eGap = [eGap;indirectBG directBG aFact];
+    
+end
