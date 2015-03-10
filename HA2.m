@@ -4,7 +4,6 @@ set(0, 'defaultTextInterpreter', 'latex');
 
 clc
 clear all
-
 % Lattice parameter [Å]
 a = 5.43;   
 
@@ -71,10 +70,10 @@ ylabel('X = Y, h = k')
 
 %% Task 1: Nice plot
 
-set(gcf,'renderer','painters','PaperPosition',[0 0 12 8]);
+set(gcf,'renderer','painters','PaperPosition',[0 0 12 7], 'PaperUnits', 'Centimeters');
 contourf(r(:)/sqrt(2), r(:), potInPlan',35,'LineStyle','none')
-colorbar
-set(get(hcb,'Title'),'String','A Title')
+h = colorbar;
+ylabel(h, 'Potential [a$_0$]','Interpreter','latex', 'fontsize', 12)
 plotTickLatex2D
 
 title('Empirical pseudopotential in Si (-1 1 0)','Interpreter','latex', 'fontsize', 14);
@@ -82,8 +81,6 @@ X = xlabel('X = Y [\AA],  h = k', 'Interpreter','latex', 'fontsize', 12);
 Y = ylabel('Z [\AA], l = 0','Interpreter','latex', 'fontsize', 12);
 set(Y, 'Units', 'Normalized', 'Position', [-0.09, 0.5, 0]);
 set(X, 'Units', 'Normalized', 'Position', [0.5, -0.055, 0]);
-
-
 
 print(gcf,'-depsc2','task1.eps')
 
@@ -132,10 +129,6 @@ for Ecut = EcutInitial:dE:EcutFinal
     [eigVecs1, e1] = eig(H1);
     [eigVecs2, e2] = eig(H2);
     [eigVecs3, e3] = eig(H3);
-    %[eigVecs1, e1] = eigs(H1, 5,'sr');
-    %[eigVecs2, e2] = eigs(H2, 5,'sr');
-    %[eigVecs3, e3] = eigs(H3, 5,'sr');
-
     
     % Take out the eigenvalues
     eigs1 = real(diag(e1));
@@ -154,22 +147,7 @@ for Ecut = EcutInitial:dE:EcutFinal
     minEig1(index) = eigs1(index1(1));
     minEig2(index) = eigs2(index2(1));
     minEig3(index) = eigs3(index3(1));
-    
-    eigs1(index1) = 100;
-    eigs2(index2) = 100;
-    eigs3(index3) = 100;
-    
-    index1 = find(eigs1 == min(eigs1));
-    index2 = find(eigs2 == min(eigs2));
-    index3 = find(eigs3 == min(eigs3));
-    
-    
-    min2Eig1(index) = eigs1(index1(1));
-    min2Eig2(index) = eigs2(index2(1));
-    min2Eig3(index) = eigs3(index3(1));
-    
-        
-    
+               
     % Save the energy cut off
     EnergyCut(index) = Ecut;
     
@@ -179,16 +157,11 @@ for Ecut = EcutInitial:dE:EcutFinal
     
 end
 
-clf
-plot(EnergyCut, minEig1, EnergyCut, minEig2, EnergyCut, minEig3);
-
 %% Task 2: Nice plot of convergence
-
 
 set(gcf,'renderer','painters','PaperPosition',[0 0 12 7], 'PaperUnits', 'Centimeters');
 plot(EnergyCut, minEig1, EnergyCut, minEig2, EnergyCut, minEig3);
 xlim([EcutInitial EcutFinal]);
-
 plotTickLatex2D
 
 title('Convergence in eigenvalues with respect to $E_{cut}$','Interpreter','latex', 'fontsize', 14);
@@ -199,8 +172,7 @@ set(X, 'Units', 'Normalized', 'Position', [0.5, -0.05, 0]);
 
 print(gcf,'-depsc2','convergence.eps')
 
-%% Task 2: Plot band structure
-
+%% Task 2: Find band structure
 clc
 
 % Lattice parameter [au]
@@ -226,36 +198,32 @@ Ecut = 10;              % [au]
 % The symmetry points in k-space
 Gamma = 2*pi/a*[0 0 0];
 X = 2*pi/a*[1 0 0];
-W = 2*pi/a*[1 0.5 1];
+W = 2*pi/a*[1 0.5 0];
 L = 2*pi/a*[0.5 0.5 0.5];
 K = 2*pi/a*[0.75 0.75 0];
-
 
 tickLable = {'$\Gamma$','X','W', 'L','$\Gamma$', 'K', '$\Gamma$'};
 %Define the path in k-space
 sPoints =[Gamma ;X ; W ;L;Gamma; K ;Gamma]; 
 
-step = 0.001;
+%Step length of the path
+step = 0.01;
 % Get the path in k-space
 [kMat, tickPoint] = getkMat(sPoints, step);
 
 % Allocate memory
 minEig = zeros(length(kMat),1);
 
-for kNum = 1:length(kMat)
-   
+for kNum = 1:length(kMat)  
     
     % Define G-vectors for which the structure factor > zero
     [G] = constructGbig(a, maxValue, kMat(kNum,:), Ecut);
 
-  
     % Get Hamiltonian
-    H = getH(a, kMat(kNum,:), G1);
-
+    H = getH(a, kMat(kNum,:), G);
 
     % Get eigenvalues and eigenvectors
     [eigVecs, eigs] = eig(H);
-
     eigs = diag(eigs);
     
     for nBands = 1:plotNumBands
@@ -271,28 +239,26 @@ for kNum = 1:length(kMat)
     
     end
     
-    disp(num2str(kNum));
+   
+    fprintf('K-point: %d of %d \n',kNum,length(kMat))
     
 end
-
-
-set(gcf,'renderer','painters','PaperPosition',[0 0 12 7], 'PaperUnits', 'Centimeters');
-
 plot(minEig);
 
 xlabel('k-vectors');
-ylabel('Energy [Hartree]');
-set(0, 'defaultTextInterpreter', 'latex');
+ylabel('Energy [a.u]');
+
 
 %% Task 2: Nice plot of band structure
-
-plot(abs(minEig));
+set(gcf,'renderer','painters','PaperPosition',[0 0 12 7], 'PaperUnits', 'Centimeters');
+set(0, 'defaultTextInterpreter', 'latex');
+plot(minEig);
 set(gca,'XTick',tickPoint)
 set(gca,'XTickLabel',tickLable)
 set(gca,'XGrid','on')
-axis([1 length(kMat) min(min(minEig)) max(max(minEig))])
-X = xlabel('\textbf{k}-vectors','fontsize', 12);
-Y = ylabel('Energy [Hartree]');
+axis([1 254 min(min(minEig)) max(max(minEig))])
+X = xlabel('\textbf{k}-vectors [1/$a_0$]','fontsize', 12);
+Y = ylabel('Energy [a.u]');
 
 title('Band structure','fontsize', 14);
 
@@ -302,7 +268,6 @@ set(X, 'Units', 'Normalized', 'Position', [0.5, -0.05, 0]);
 
 print(gcf,'-depsc2','bandstruc.eps')
 
-save('band.mat','minEig', 'kMat', 'minEig3')
 %% Task 3: The valence electron charge density
 
 clc

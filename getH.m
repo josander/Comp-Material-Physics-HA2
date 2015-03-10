@@ -1,6 +1,8 @@
 function [ H ] = getH(a,  K, G )
-%GETHEYE Summary of this function goes here
-%   Detailed explanation goes here
+%GETHEYE Function that builds a hamiltonian
+%   a =  lattice parameter in a.u
+%   K = k-vector
+%   G = G-matrix 
 hbar = 1;
 me = 1;
 
