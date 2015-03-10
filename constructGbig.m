@@ -12,13 +12,9 @@ G = [];
 
 % Find different G-vectors where h,k,l all odd or all even
 for i = -maxValue:maxValue
-
    for j = -maxValue:maxValue
-
         for k = -maxValue:maxValue
-
             temp = i*b(1,:) + j*b(2,:) + k*b(3,:);
-
             if mod(temp(1),2) == 0 && mod(temp(2),2) == 0 && mod(temp(3),2) == 0
                 
                 E = hbar^2/(2*me)*norm(kVec + 2*pi/a.*temp)^2;
@@ -28,7 +24,6 @@ for i = -maxValue:maxValue
                     G(end+1,:) = temp;
                 
                 end
-
            elseif mod(temp(1),2) == 1 && mod(temp(2),2) == 1 && mod(temp(3),2) == 1
 
                 E = hbar^2/(2*me)*norm(kVec + 2*pi/a.*temp)^2;
