@@ -1,4 +1,7 @@
 function VG = getVG(a,G)
+%GETVG Function that gets the potental
+%   a =  lattice parameter in a.u
+%   G = G-point 
 
 %Defining constants
 d = [1 1 1; -1 -1 -1].*(a/8);
