@@ -165,8 +165,8 @@ xlim([EcutInitial EcutFinal]);
 plotTickLatex2D
 
 title('Convergence in eigenvalues with respect to $E_{cut}$','Interpreter','latex', 'fontsize', 14);
-X = xlabel('$E_{cut} [au]$', 'Interpreter','latex', 'fontsize', 12);
-Y = ylabel('Energy [au]','Interpreter','latex', 'fontsize', 12);
+X = xlabel('E$_{cut}$ [a.u]', 'Interpreter','latex', 'fontsize', 12);
+Y = ylabel('Energy [a.u]','Interpreter','latex', 'fontsize', 12);
 set(Y, 'Units', 'Normalized', 'Position', [-0.12, 0.5, 0]);
 set(X, 'Units', 'Normalized', 'Position', [0.5, -0.05, 0]);
 
@@ -314,7 +314,7 @@ step = 0.05;
 minEig = zeros(length(kMat),1);
 
 aStart = 1;
-aStep = -0.01;
+aStep = -0.005;
 aStop = 0.9;
 
 eGap = [];
@@ -350,11 +350,28 @@ for aFact = aStart:aStep:aStop
         end
 
 
-        fprintf('K-point: %d of %d \n aFact: %d\n',kNum,length(kMat), aFact)
+        fprintf('K-point: %d of %d \naFact: %d of aStop %d \n',kNum,length(kMat), aFact, aStop)
     end
     indirectBG = min(minEig(:,5)) - max(minEig(:,4));
     directBG = min(minEig(:,5) - minEig(:,4));
     
-    eGap = [eGap;indirectBG directBG];
+    eGap = [eGap;indirectBG directBG aFact];
     
 end
+
+%% Task 4: Nice plot of eGap
+
+set(gcf,'renderer','painters','PaperPosition',[0 0 12 7], 'PaperUnits', 'Centimeters');
+plot(eGap(:,3)*aTrue,eGap(:,1),eGap(:,3)*aTrue,eGap(:,2));
+xlim([9.2 10.3]);
+
+title('Band gap as a function a$_{0}$','Interpreter','latex', 'fontsize', 14);
+X = xlabel('a$_{0}$ [a.u]', 'Interpreter','latex', 'fontsize', 12);
+Y = ylabel('Energy [a.u]','Interpreter','latex', 'fontsize', 12);
+%set(Y, 'Units', 'Normalized', 'Position', [-0.12, 0.5, 0]);
+set(X, 'Units', 'Normalized', 'Position', [0.5, -0.07, 0]);
+L = legend('Indirect bandgap','Direct bandgap');
+set(L,'Interpreter', 'latex', 'location', 'east');
+
+plotTickLatex2D
+print(gcf,'-depsc2','eGap.eps')
