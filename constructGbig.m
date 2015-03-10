@@ -16,8 +16,8 @@ for i = -maxValue:maxValue
         for k = -maxValue:maxValue
             temp = i*b(1,:) + j*b(2,:) + k*b(3,:);
             if mod(temp(1),2) == 0 && mod(temp(2),2) == 0 && mod(temp(3),2) == 0
-          
-               E = hbar^2/(2*me)*norm(kVec + 2*pi/a*temp)^2;
+                
+                E = hbar^2/(2*me)*norm(kVec + 2*pi/a.*temp)^2;
 
                 if E < Ecut
                 
@@ -26,7 +26,7 @@ for i = -maxValue:maxValue
                 end
            elseif mod(temp(1),2) == 1 && mod(temp(2),2) == 1 && mod(temp(3),2) == 1
 
-                E = hbar^2/(2*me)*norm(kVec + 2*pi/a*temp)^2;
+                E = hbar^2/(2*me)*norm(kVec + 2*pi/a.*temp)^2;
 
                 if E < Ecut
                 
