@@ -165,8 +165,8 @@ xlim([EcutInitial EcutFinal]);
 plotTickLatex2D
 
 title('Convergence in eigenvalues with respect to $E_{cut}$','Interpreter','latex', 'fontsize', 14);
-X = xlabel('$E_{cut} [au]$', 'Interpreter','latex', 'fontsize', 12);
-Y = ylabel('Energy [au]','Interpreter','latex', 'fontsize', 12);
+X = xlabel('E$_{cut}$ [a.u]', 'Interpreter','latex', 'fontsize', 12);
+Y = ylabel('Energy [a.u]','Interpreter','latex', 'fontsize', 12);
 set(Y, 'Units', 'Normalized', 'Position', [-0.12, 0.5, 0]);
 set(X, 'Units', 'Normalized', 'Position', [0.5, -0.05, 0]);
 
@@ -361,3 +361,23 @@ for aFact = aStart:aStep:aStop
     eGap = [eGap;indirectBG directBG];
     
 end
+<<<<<<< HEAD
+=======
+
+%% Task 4: Nice plot of eGap
+
+set(gcf,'renderer','painters','PaperPosition',[0 0 12 7], 'PaperUnits', 'Centimeters');
+plot(eGap(:,3)*aTrue,eGap(:,1),eGap(:,3)*aTrue,eGap(:,2));
+xlim([9.2 10.3]);
+
+title('Band gap as a function a$_{0}$','Interpreter','latex', 'fontsize', 14);
+X = xlabel('a$_{0}$ [a.u]', 'Interpreter','latex', 'fontsize', 12);
+Y = ylabel('Energy [a.u]','Interpreter','latex', 'fontsize', 12);
+%set(Y, 'Units', 'Normalized', 'Position', [-0.12, 0.5, 0]);
+set(X, 'Units', 'Normalized', 'Position', [0.5, -0.07, 0]);
+L = legend('Indirect bandgap','Direct bandgap');
+set(L,'Interpreter', 'latex', 'location', 'east');
+
+plotTickLatex2D
+print(gcf,'-depsc2','eGap.eps')
+>>>>>>> ac8317f19c42bd3ef9c691a3ed0738a3b469674b
